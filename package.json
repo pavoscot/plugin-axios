@@ -1,52 +1,49 @@
 {
   "name": "@vuex-orm/plugin-axios",
-  "version": "0.5.1",
-  "description": "Vuex-ORM Plugin to sync the data against a RESTful API.",
-  "main": "dist/index.js",
+  "version": "0.6.0",
+  "description": "Vuex-ORM Plugin to sync the data against a RESTful API",
+  "main": "dist/plugin-axios.cjs.js",
+  "repository": "https://github.com/@vuex-orm/plugin-axios",
   "scripts": {
-    "watch": "webpack --watch --mode=production",
-    "build": "webpack --mode=production",
-    "lint": "eslint src/**/*.js test/**/*.js",
-    "test": "jest"
+    "test": "jest",
+    "prebuild": "rimraf dist",
+    "transpile": "babel src -d dist --copy-files",
+    "build": "rollup -c rollup.config.js",
+    "lint": "eslint src/**"
   },
-  "repository": {
-    "type": "git+https://github.com/vuex-orm/plugin-axios.git"
-  },
-  "keywords": [
-    "vue",
-    "vuex",
-    "vuex-plugin",
-    "vuex-orm",
-    "vuex-orm-plugin",
-    "axios",
-    "http"
-  ],
-  "author": "Kani Robinson",
+  "author": "sebastian.smolorz1@gmail.com",
   "license": "MIT",
-  "jest": {
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    }
-  },
-  "dependencies": {
-    "@vuex-orm/core": "^0.31.13",
-    "axios": "^0.19.0",
-    "lodash": "^4.17.11"
-  },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/runtime": "^7.3.1",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "^23.4.2",
-    "babel-loader": "^8.0.0",
-    "eslint": "^5.4.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^21.22.0",
-    "jest": "^23.5.0",
-    "webpack": "^4.17.1",
-    "webpack-cli": "^3.1.0"
-  }
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/runtime": "^7.5.5",
+    "@vuex-orm/core": "^0.31.10",
+    "axios": "^0.18.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel7-jest": "^1.0.1",
+    "corejs": "^1.0.0",
+    "eslint": "^6.1.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "jest": "^24.8.0",
+    "moxios": "^0.4.0",
+    "qs": "^6.7.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-bundle-size": "^1.0.3",
+    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-uglify": "^6.0.2",
+    "sinon": "^7.4.1"
+  },
+  "devtool": "source-map"
 }

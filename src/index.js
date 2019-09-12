@@ -1,14 +1,16 @@
-import VuexOrmAxios from './vuex-orm-axios';
+import 'core-js/fn/string/includes'
+import _Actions from './Actions'
+import RestFrameworkApi from './Apis'
+import { applyActions } from './utils'
 
-export default class VuexOrmAxiosPlugin {
-  /**
-   * This is called, when VuexORM.install(VuexOrmAxios, options) is called.
-   *
-   * @param {Components} components The Vuex-ORM Components collection
-   * @param {Options} options The options passed to VuexORM.install
-   * @returns {VuexOrmAxios}
-   */
-  static install(components, options) {
-    return new VuexOrmAxios(components, options);
+export const plugin = {
+  install (components, Api) {
+    if (!Api) {
+      throw new Error('Must supply a RestFramework instance')
+    }
+    applyActions(Api, components.Model)
   }
 }
+export const RestFramework = RestFrameworkApi
+export const Actions = _Actions
+export const VuexOrmRestFrameworkPlugin = plugin

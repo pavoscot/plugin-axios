@@ -1,23 +1,22 @@
 const path = require('path');
-
 module.exports = {
-  entry: './src/index.js',
-  target: 'node',
-  output: {
-    library: 'vuex-orm-axios',
-    libraryTarget: 'umd',
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
-      },
-    ],
-  },
+    entry: path.join(__dirname, "src/index.js"),
+    devtool: 'source-map',
+    module: {
+        rules: [
+            {
+                test: /\.(js)$/,
+                use: "babel-loader",
+                exclude: /node_modules/
+            }
+        ]
+    },
+    resolve: {
+        extensions: [".js"]
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: "[name].js",
+        sourceMapFilename: "[name].js.map"
+    }
 };

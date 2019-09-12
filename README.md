@@ -1,312 +1,271 @@
-# Vuex ORM Plugin: Axios
+# Vuex-ORM Axios Rest Framework
 
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![License](https://img.shields.io/npm/l/@vuex-orm/plugin-axios.svg)](https://github.com/vuex-orm/plugin-axios/blob/master/LICENSE.md)
+Vuex-ORM plugin to enable syncing data to a server using Axios. Define your models, configure some api actions and let the plugin do the...REST
 
-# Installation
-``` js
-import VuexORM from '@vuex-orm/core'
-import VuexORMAxios from '@vuex-orm/plugin-axios'
-import database from './database'
-..
+### Requirements
+ 1. Vuex
+ 2. Vuex-orm
 
-VuexORM.use(VuexORMAxios, {
+
+### Installation
+
+```npm install --save vuex-orm-rest-framework``` 
+
+### Quickstart
+
+```
+// store.js
+import { YourModel } from './models'
+import {
+  VuexOrmRestFrameworkPlugin,
+  RestFramework
+} from 'vuex-orm-rest-framework'
+
+
+// Vuex/Vuex-ORM setup
+Vue.use(Vuex)
+const database = new VuexORM.Database()
+database.register(YourModel)
+
+
+// Configure your base api instance.
+const Api = new RestFramework({
   database,
-  http: {
-    baseURL: 'https://jsonplaceholder.typicode.com',
-    url: '/',
+  axiosConfig: {
+    baseURL: 'https://jsonplaceholder.typicode.com/',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
+    },
+    validateStatus: function (status) {
+      return status < 400
     }
+    ...rest of your axios config (see https://github.com/axios/axios#request-config)
   }
 })
-..
 
-export default () => new Vuex.Store({
-  namespaced: true,
-  plugins: [VuexORM.install(database)]
-})
-
-```
-
-# Axios Request Config
-
-``` js
-export const AxiosRequestConfig = {
-  /**
-   * Default Base URL
-   */
-  baseURL: 'http://localhost:3000',
-
-  /**
-   * Default URL
-   */
-  url: '/',
-
-  /**
-   * Default Method
-   */
-  method: 'get',
-
-  /**
-   * Access Token Variable
-   */
-  access_token: '',
-
-  /**
-   * Default Headers
-   */
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-
-  /**
-   * Default Data
-   */
-  data: {},
-
-  /**
-   * Default Timout
-   */
-  timeout: 0,
-
-  /**
-   * Default With Credentials Flag
-   */
-  withCredentials: false,
-
-  /**
-   * Default Response Type
-   */
-  responseType: 'json',
-
-  /**
-   * Default Response Encoding
-   */
-  responseEncoding: 'utf8',
-
-  /**
-   * Default Validate Status Method
-   * @param {number} status
-   */
-  validateStatus(status) {
-    return status >= 200 && status < 300; // default
-  },
-
-  /**
-   * Default Max Redirects
-   */
-  maxRedirects: 5,
-
-  /**
-   * Default Socket Path
-   */
-  socketPath: null,
-
-  /**
-   * Default Proxy
-   */
-  proxy: {},
-
-  /**
-   * Default on Response
-   * @param {object} response
-   */
-  onResponse(response) {
-    return response.data;
-  },
-
-  /**
-   * On 401 Unauthorised
-   * @param {object} error
-   */
-  onUnauthorised(error) {
-    //
-  },
-
-  /**
-   * On 404 Not Found
-   * @param {object} error
-   */
-  onNotFound(error) {
-    //
-  },
-
-  /**
-   * On 500 Server Error
-   * @param {object} error
-   */
-  onServerError(error) {
-    //
-  },
-
-  /**
-   * On Generic Error
-   * @param {object} error
-   */
-  onGenericError(error) {
-    //
-  },
-
-  /**
-   * On Laravel Validation Error (Or 422 Error).
-   * @param {object} error
-   */
-  onValidationError(error) {
-    //
-  },
-
-  /**
-   * Default on Error
-   * @param {object} error
-   */
-  onError(error) {
-    switch (error.response.status) {
-      case 401:
-        this.onUnauthorised(error);
-        break;
-      case 404:
-        this.onNotFound(error);
-        break;
-      case 422:
-        this.onValidationError(error);
-        break;
-      case 500:
-        this.onServerError(error);
-        break;
-      default:
-        this.onGenericError(error);
-        break;
-    }
-
+// Modify axios instance if desired
+Api.client.interceptors.request.use(function (config) {
+    console.log('intercept')
+    return config;
+  }, function (error) {
+    // Do something with request error
     return Promise.reject(error);
-  },
-};
+  });
+
+
+// Register plugin with Vuex-ORM
+VuexORM.use(VuexOrmRestFramework, Api)
 ```
 
-
-# Model Methods
-``` js
-import User from '../models/User';
-
-/**
- * @uri `/users`
- */
-User.$fetch();
-
-/**
- * @uri `/users/:id`
- */
-User.$get({
-  params: {
-    id: 1
-  }
-}); 
-
-/**
- * @uri `/users`
- */
-User.$create({
-  data: {}
-});
-
-/**
- * @uri `/users/:id`
- */
-User.$update({
-  params: {
-    id: 1
-  },
-  data: {}
-});
-
-/**
- * @uri `/users/:id`
- */
-User.$delete({
-  params: {
-    id: 1
-  }
-});
 ```
+// models.js
+ import { Actions } from 'vuex-orm-rest-framework'
 
-# Model Config
-
-> Default Model
-
-``` js
-import { Model } from '@vuex-orm/core'
-
-export default class Post extends Model {
-  static entity = 'posts'
+class YourModel extends Model {
+  static entity = 'users'
 
   static fields () {
     return {
-      id: this.increment(),
-      title: this.string('')
+      id: this.attr(null),
+      name: this.attr('')
     }
   }
-}
-```
-
-> Edited Model
-
-``` js
-import { Model } from '@vuex-orm/core'
-
-export default class Post extends Model {
-  static entity = 'posts'
-
-  static fields () {
-    return {
-      id: this.increment(),
-      title: this.string('')
-    }
-  }
-
+  
   static methodConf = {
-    http: {
-      url: '/post'
-    },
+    baseURL: 'users',
     methods: {
-      $fetch: {
-        name: 'fetch',
-        http: {
-          url: '',
-          method: 'get',
-        },
+      fetch: {
+        action: Actions.Fetch,
+        url: '/',
       },
-      $get: {
-        name: 'get',
-        http: {
-          url: '/:id',
-          method: 'get',
-        },
+      create: {
+        url: '/',
+        action: Actions.Create,
       },
-      $create: {
-        name: 'create',
-        http: {
-          url: '',
-          method: 'post',
-        },
+      update: {
+        url: '/:id',
+        action: Actions.Update,
       },
-      $update: {
-        name: 'update',
-        http: {
-          url: '/:id',
-          method: 'put',
-        },
+      retrieve: {
+        url: '/:id',
+        action: Actions.Retrieve,
       },
-      $delete: {
-        name: 'delete',
-        http: {
-          url: '/:id',
-          method: 'delete',
-        },
-      },
-    },
+      delete: {
+        url: '/:id',
+        action: Actions.Delete,
+      }
+    }
   }
 }
 ```
+
+Now you are able to access the methods defined in your model methodConf like so:
+
+``` 
+// MyComponent.vue
+import { YourModel } from './models' 
+YourModel.api().fetch() 
+```
+
+### Terminology
+
+Action - an api call which results in vuex data being modified.
+
+URL parameters - parameter in a url like an id e.g. server.com/user/{id}
+
+Query parameters - url encoded query params e.g. ?foo=bar 
+
+### API actions
+
+By default there are 5 actions available:
+ * Fetch (GET)
+ * Retrieve (GET)
+ * Delete (DELETE)
+ * Create (POST)
+ * Update (PUT)
+ 
+To define an api action for a model provide a methodConf on your model.
+ 
+ ```
+ import { Actions } from 'vuex-orm-rest-framework'
+ class YourModel extends Model {
+ static entity = 'users'
+ 
+ ...
+ 
+ static methodConf = {
+   baseURL: 'users',
+    methods: {
+      fetch: {
+        url: '/',
+        action: Actions.Fetch
+      },
+      update: {
+        url: '/:id',
+        action: Actions.Update
+      }
+      ...
+    }
+  }
+ ```
+ 
+ ##### Urls
+ Using the quick start config, urls for an action are built up as follows:
+ 
+ ```
+ https://jsonplaceholder.typicode.com/          +         users            +            /
+ VuexOrmRestFrameworkPlugin.axiosConfig.baseURL + Model.methodConf.baseURL + Model.methodConf.methods.{action}.url
+ ```
+ You may notice ```:id``` in the update action url. This will get replaced when you provide
+ a url object to your action call.
+ 
+ ### Using actions
+ 
+ To call the action, simply import the model into your Vue component and access it via
+ your model's api() method:
+ 
+ ``` YourModel.api().update() ```
+ 
+ #### Requests
+ 
+ Data, URL & query params: 
+   
+  ``` 
+           YourModel.api().update(
+             {
+               url: { 'id': 1 }, // this replaces :id in your action url
+               data: { name: 'Steve' }, // self-explanatory
+               params: { 'foo': 'bar' } // query parameters
+             },
+             { 
+               // additional axios config
+               headers: { 'Authorization': 'Bearer xyz123' } 
+             } 
+           )
+  ```
+
+
+#### Responses
+
+Calling actions will return an object containing the response and instances affected by the api call.
+
+e.g. 
+``` 
+const response = YourModel.api().create({data: { name: 'Steve' }}) 
+
+console.log(response.response)
+// returns an axios response:
+// { data: {…}, status: 201, statusText: "Created", headers: {…}, config: {…}, request: XMLHttpRequest }
+
+console.log(response.objects)
+// returns created Vuex-ORM objects:
+// {"users":[{"id":11,"name":"Steve","username":"","email":""}]}
+```
+
+
+### Action lifecycle
+
+ 1. call
+ 2. beforeDispatch
+ 3. getEndpoint
+ 4. dispatch
+ 5. onSuccess/onError 
+ 6. persist (insert/delete/update)
+ 7. afterDispatch
+
+Feel free to check the source code for arguments. All these methods can be overridden in your methodConf like so:
+
+```
+      ...
+      update: {
+        url: '/:id',
+        action: Actions.Update,
+        overrides: {
+          onError (error) {
+            // custom behaviour
+          }
+        }
+      }
+      ...
+```
+
+### Customs actions
+
+Using existing actions as a template, you can define any number of custom actions.
+Just add a new entry to your model methodConf and override desired methods.
+
+Take this slightly awkward example:
+
+You have some UI with a selectable list of users and a submit button. Selected users are deactivated.
+To accomplish this you use an endpoint that takes multiple ids from query parameters 
+and updates the corresponding user objects' status via a POST request, 
+returning a 200 response and the updated data (status).
+
+By default, the `Create` action uses POST but insertOrUpdate to persist whatever data is returned from the server.
+You want to use the query params you sent up in `where`, to use Vuex-ORM's `update` method.
+To do this you need to override `persist` as follows:
+
+```
+      updateMulti: {
+        action: Create,
+        url: '/',
+        overrides: {
+          persist: function ({ params, data, url }) {
+            console.log('Overriden persist')
+            return this.model.update({ where: params.ids, data })
+          }
+        }
+      }
+```
+
+
+
+### Browser compatibility
+This plugin supports all major browsers including IE 11
+
+### Coming Soon
+ * Generic actions - PatchAction, PostAction
+ * Pagination
+ * Entity-level api context e.g. loading, errors
+
