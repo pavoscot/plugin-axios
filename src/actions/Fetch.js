@@ -51,12 +51,9 @@ export default class Fetch extends Action {
       insertData = data
     }
 
-    model.commit((state) => {
-        state.fetching = true
-    })
-
     return model.insertOrUpdate({
       data: insertData,
+      fetching: true
     });
   }
 
