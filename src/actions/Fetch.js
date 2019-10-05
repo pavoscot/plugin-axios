@@ -42,6 +42,9 @@ export default class Fetch extends Action {
    * @param {object} data
    */
   static onSuccess(commit, model, data) {
+      console.log(`Commit: ${commit}`);
+      console.log(`Model: ${model}`);
+      console.log(`Data: ${data}`);
     commit('onSuccess')
     let insertData
     if(isPlainObject(data)) {
