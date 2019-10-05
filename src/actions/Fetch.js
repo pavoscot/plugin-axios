@@ -53,7 +53,7 @@ export default class Fetch extends Action {
 
     return model.insertOrUpdate({
       data: insertData,
-      fetching: true
+      fetching: data
     });
   }
 
