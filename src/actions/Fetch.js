@@ -51,11 +51,7 @@ export default class Fetch extends Action {
       insertData = data;
     }
 
-    model.commit(state => {
-        state.meta = {
-            pages: 1
-        }
-    });
+    commit('onPagination', data.meta);
 
     return model.insertOrUpdate({
       data: insertData,

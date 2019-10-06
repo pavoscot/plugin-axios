@@ -216,6 +216,16 @@ export const ModuleConfig = {
       state.loading = false;
       state.errors = [];
     },
+
+    /**
+     * On Pagination
+     * @param {object} state
+     * @param {object} data
+     */
+    onPagination(state, data) {
+      state.pagination = data;
+    }
+
   },
 
   /**
