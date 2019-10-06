@@ -53,7 +53,9 @@ export default class Fetch extends Action {
 
         return model.insertOrUpdate({
             data: insertData,
-            meta: data['meta']
+            meta: {
+                pages: 1
+            }
         });
     }
 
